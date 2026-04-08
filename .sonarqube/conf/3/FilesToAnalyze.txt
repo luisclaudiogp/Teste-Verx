@@ -1,2 +1,0 @@
-﻿C:\Note_luis\Projetos\Teste-Verx\src\Consolidado\Consolidado.Application\Consumers\LancamentoCriadoConsumer.cs
-C:\Note_luis\Projetos\Teste-Verx\src\Consolidado\Consolidado.Application\Services\SaldoService.cs

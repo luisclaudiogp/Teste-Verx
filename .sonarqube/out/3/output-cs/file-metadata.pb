@@ -1,6 +1,0 @@
-w
-nC:\Note_luis\Projetos\Teste-Verx\src\Consolidado\Consolidado.Application\Consumers\LancamentoCriadoConsumer.csutf-8j
-aC:\Note_luis\Projetos\Teste-Verx\src\Consolidado\Consolidado.Application\Services\SaldoService.csutf-8ê
-ÑC:\Note_luis\Projetos\Teste-Verx\src\Consolidado\Consolidado.Application\obj\Debug\net10.0\Consolidado.Application.GlobalUsings.g.csutf-8ñ
-äC:\Note_luis\Projetos\Teste-Verx\src\Consolidado\Consolidado.Application\obj\Debug\net10.0\.NETCoreApp,Version=v10.0.AssemblyAttributes.csutf-8é
-ÇC:\Note_luis\Projetos\Teste-Verx\src\Consolidado\Consolidado.Application\obj\Debug\net10.0\Consolidado.Application.AssemblyInfo.csutf-8
