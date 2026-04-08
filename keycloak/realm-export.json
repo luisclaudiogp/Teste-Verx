@@ -1,0 +1,36 @@
+{
+  "realm": "Verx",
+  "enabled": true,
+  "clients": [
+    {
+      "clientId": "verx-api",
+      "enabled": true,
+      "publicClient": true,
+      "directAccessGrantsEnabled": true,
+      "webOrigins": [
+        "*"
+      ]
+    }
+  ],
+  "users": [
+    {
+      "username": "admin",
+      "enabled": true,
+      "email": "luisclaudio@gmail.com",
+      "firstName": "Luis",
+      "lastName": "Proença",
+      "emailVerified": true,
+      "requiredActions": [],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "admin",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "admin"
+      ]
+    }
+  ]
+}

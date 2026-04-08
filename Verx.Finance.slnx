@@ -1,0 +1,19 @@
+<Solution>
+  <Folder Name="/src/">
+    <Folder Name="/src/Consolidado/">
+        <Project Path="src/Consolidado/Consolidado.API/Consolidado.API.csproj" />
+        <Project Path="src/Consolidado/Consolidado.Application/Consolidado.Application.csproj" />
+        <Project Path="src/Consolidado/Consolidado.Domain/Consolidado.Domain.csproj" />
+        <Project Path="src/Consolidado/Consolidado.Infrastructure/Consolidado.Infrastructure.csproj" />
+        <Project Path="src/Consolidado/Consolidado.UnitTests/Consolidado.UnitTests.csproj" />
+    </Folder>
+    <Folder Name="/src/Lancamentos/">
+        <Project Path="src/Lancamentos/Lancamentos.API/Lancamentos.API.csproj" />
+        <Project Path="src/Lancamentos/Lancamentos.Application/Lancamentos.Application.csproj" />
+        <Project Path="src/Lancamentos/Lancamentos.Domain/Lancamentos.Domain.csproj" />
+        <Project Path="src/Lancamentos/Lancamentos.Infrastructure/Lancamentos.Infrastructure.csproj" />
+        <Project Path="src/Lancamentos/Lancamentos.UnitTests/Lancamentos.UnitTests.csproj" />
+    </Folder>
+    <Project Path="src/Shared.Contracts/Shared.Contracts.csproj" />
+  </Folder>
+</Solution>

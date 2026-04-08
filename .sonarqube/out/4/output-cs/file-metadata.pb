@@ -1,0 +1,13 @@
+o
+fC:\Note_luis\Projetos\Teste-Verx\src\Consolidado\Consolidado.API\Consumers\LancamentoCriadoConsumer.csutf-8g
+^C:\Note_luis\Projetos\Teste-Verx\src\Consolidado\Consolidado.API\Controllers\AuthController.csutf-8n
+eC:\Note_luis\Projetos\Teste-Verx\src\Consolidado\Consolidado.API\Controllers\ConsolidadoController.csutf-8f
+]C:\Note_luis\Projetos\Teste-Verx\src\Consolidado\Consolidado.API\Data\ConsolidadoDbContext.csutf-8_
+VC:\Note_luis\Projetos\Teste-Verx\src\Consolidado\Consolidado.API\Domain\SaldoDiario.csutf-8T
+KC:\Note_luis\Projetos\Teste-Verx\src\Consolidado\Consolidado.API\Program.csutf-8
+tC:\Note_luis\Projetos\Teste-Verx\src\Consolidado\Consolidado.API\obj\Debug\net10.0\Consolidado.API.GlobalUsings.g.csutf-8Ž
+‚C:\Note_luis\Projetos\Teste-Verx\src\Consolidado\Consolidado.API\obj\Debug\net10.0\.NETCoreApp,Version=v10.0.AssemblyAttributes.csutf-8}
+rC:\Note_luis\Projetos\Teste-Verx\src\Consolidado\Consolidado.API\obj\Debug\net10.0\Consolidado.API.AssemblyInfo.csutf-8‘
+…C:\Note_luis\Projetos\Teste-Verx\src\Consolidado\Consolidado.API\obj\Debug\net10.0\Consolidado.API.MvcApplicationPartsAssemblyInfo.csutf-8ô
+èC:\Note_luis\Projetos\Teste-Verx\src\Consolidado\Consolidado.API\obj\Debug\net10.0\Microsoft.AspNetCore.OpenApi.SourceGenerators\Microsoft.AspNetCore.OpenApi.SourceGenerators.XmlCommentGenerator\OpenApiXmlCommentSupport.generated.csutf-8ð
+äC:\Note_luis\Projetos\Teste-Verx\src\Consolidado\Consolidado.API\obj\Debug\net10.0\Microsoft.AspNetCore.App.SourceGenerators\Microsoft.AspNetCore.SourceGenerators.PublicProgramSourceGenerator\PublicTopLevelProgram.Generated.g.csutf-8

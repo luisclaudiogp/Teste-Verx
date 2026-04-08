@@ -1,0 +1,139 @@
+services:
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: verx_rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    networks:
+      - verx_net
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: verx_postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: verx_password_secure
+      POSTGRES_DB: verx_db
+    ports:
+      - "5432:5432"
+    networks:
+      - verx_net
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:alpine
+    container_name: verx_redis
+    ports:
+      - "6379:6379"
+    networks:
+      - verx_net
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:24.0.2
+    container_name: verx_keycloak
+    command: start-dev --import-realm
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_HEALTH_ENABLED: 'true'
+      KC_METRICS_ENABLED: 'true'
+    ports:
+      - "8081:8080"
+    volumes:
+      - ./keycloak:/opt/keycloak/data/import/
+    networks:
+      - verx_net
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: verx_jaeger
+    ports:
+      - "16686:16686"
+      - "4317:4317" # OTLP gRPC
+    networks:
+      - verx_net
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: verx_prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - verx_net
+
+  lancamentos-api:
+    build:
+      context: .
+      dockerfile: src/Lancamentos/Lancamentos.API/Dockerfile
+    container_name: verx_lancamentos_api
+    ports:
+      - "5000:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=lancamentos_db;Username=postgres;Password=verx_password_secure
+      - RabbitMQ__Host=rabbitmq
+      - RabbitMQ__Username=guest
+      - RabbitMQ__Password=guest
+      - Keycloak__BaseUrl=http://keycloak:8080
+      - Keycloak__Authority=http://keycloak:8080/realms/Verx
+      - Keycloak__Audience=verx-api
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+    depends_on:
+      - postgres
+      - rabbitmq
+      - keycloak
+      - jaeger
+    networks:
+      - verx_net
+
+  consolidado-api:
+    build:
+      context: .
+      dockerfile: src/Consolidado/Consolidado.API/Dockerfile
+    container_name: verx_consolidado_api
+    ports:
+      - "5001:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=consolidado_db;Username=postgres;Password=verx_password_secure
+      - RabbitMQ__Host=rabbitmq
+      - RabbitMQ__Username=guest
+      - RabbitMQ__Password=guest
+      - Redis__ConnectionString=redis:6379
+      - Keycloak__BaseUrl=http://keycloak:8080
+      - Keycloak__Authority=http://keycloak:8080/realms/Verx
+      - Keycloak__Audience=verx-api
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+    depends_on:
+      - postgres
+      - rabbitmq
+      - redis
+      - keycloak
+      - jaeger
+    networks:
+      - verx_net
+
+  sonarqube:
+    image: sonarqube:lts-community
+    container_name: verx_sonarqube
+    ports:
+      - "9000:9000"
+    environment:
+      - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true
+    networks:
+      - verx_net
+
+networks:
+  verx_net:
+    driver: bridge
+
+volumes:
+  postgres_data:
+

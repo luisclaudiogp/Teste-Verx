@@ -1,0 +1,12 @@
+﻿C:\Note_luis\Projetos\Teste-Verx\src\Consolidado\Consolidado.UnitTests\Consumers\LancamentoCriadoConsumerTests.cs
+C:\Note_luis\Projetos\Teste-Verx\src\Consolidado\Consolidado.UnitTests\Controllers\ConsolidadoControllerTests.cs
+C:\Note_luis\Projetos\Teste-Verx\src\Consolidado\Consolidado.UnitTests\Domain\SaldoDiarioTests.cs
+C:\Note_luis\Projetos\Teste-Verx\src\Consolidado\Consolidado.UnitTests\Infrastructure\SaldoRepositoryTests.cs
+C:\Note_luis\Projetos\Teste-Verx\src\Consolidado\Consolidado.UnitTests\Integration\ConsolidadoIntegrationTests.cs
+C:\Note_luis\Projetos\Teste-Verx\src\Consolidado\Consolidado.UnitTests\Services\SaldoServiceTests.cs
+C:\Users\lc-gp\.nuget\packages\microsoft.net.test.sdk\17.14.1\build\net8.0\Microsoft.NET.Test.Sdk.Program.cs
+C:\Users\lc-gp\.nuget\packages\microsoft.testplatform.testhost\17.14.1\build\net8.0\x64\testhost.exe
+C:\Users\lc-gp\.nuget\packages\microsoft.testplatform.testhost\17.14.1\build\net8.0\x64\testhost.dll
+C:\Users\lc-gp\.nuget\packages\xunit.runner.visualstudio\3.1.4\build\net8.0\xunit.abstractions.dll
+C:\Users\lc-gp\.nuget\packages\xunit.runner.visualstudio\3.1.4\build\net8.0\xunit.runner.visualstudio.testadapter.dll
+C:\Note_luis\Projetos\Teste-Verx\src\Consolidado\Consolidado.UnitTests\coverage.opencover.xml

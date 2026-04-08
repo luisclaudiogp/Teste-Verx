@@ -1,0 +1,15 @@
+﻿C:\Note_luis\Projetos\Teste-Verx\src\Consolidado\Consolidado.API\Consumers\LancamentoCriadoConsumer.cs
+C:\Note_luis\Projetos\Teste-Verx\src\Consolidado\Consolidado.API\Controllers\AuthController.cs
+C:\Note_luis\Projetos\Teste-Verx\src\Consolidado\Consolidado.API\Controllers\ConsolidadoController.cs
+C:\Note_luis\Projetos\Teste-Verx\src\Consolidado\Consolidado.API\Data\ConsolidadoDbContext.cs
+C:\Note_luis\Projetos\Teste-Verx\src\Consolidado\Consolidado.API\Domain\SaldoDiario.cs
+C:\Note_luis\Projetos\Teste-Verx\src\Consolidado\Consolidado.API\Program.cs
+C:\Note_luis\Projetos\Teste-Verx\src\Consolidado\Consolidado.API\obj\Debug\net10.0\Consolidado.API.GlobalUsings.g.cs
+C:\Note_luis\Projetos\Teste-Verx\src\Consolidado\Consolidado.API\obj\Debug\net10.0\.NETCoreApp,Version=v10.0.AssemblyAttributes.cs
+C:\Note_luis\Projetos\Teste-Verx\src\Consolidado\Consolidado.API\obj\Debug\net10.0\Consolidado.API.AssemblyInfo.cs
+C:\Note_luis\Projetos\Teste-Verx\src\Consolidado\Consolidado.API\obj\Debug\net10.0\Consolidado.API.MvcApplicationPartsAssemblyInfo.cs
+C:\Note_luis\Projetos\Teste-Verx\src\Consolidado\Consolidado.API\appsettings.Development.json
+C:\Note_luis\Projetos\Teste-Verx\src\Consolidado\Consolidado.API\appsettings.json
+C:\Note_luis\Projetos\Teste-Verx\src\Consolidado\Consolidado.API\Consolidado.API.http
+C:\Note_luis\Projetos\Teste-Verx\src\Consolidado\Consolidado.API\Dockerfile
+C:\Note_luis\Projetos\Teste-Verx\src\Consolidado\Consolidado.API\Properties\launchSettings.json

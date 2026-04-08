@@ -1,0 +1,2 @@
+﻿C:\Note_luis\Projetos\Teste-Verx\src\Consolidado\Consolidado.Domain\Entities\SaldoDiario.cs
+C:\Note_luis\Projetos\Teste-Verx\src\Consolidado\Consolidado.Domain\Repositories\ISaldoRepository.cs

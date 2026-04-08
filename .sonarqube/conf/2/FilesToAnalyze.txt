@@ -1,0 +1,2 @@
+﻿C:\Note_luis\Projetos\Teste-Verx\src\Consolidado\Consolidado.Infrastructure\Data\ConsolidadoDbContext.cs
+C:\Note_luis\Projetos\Teste-Verx\src\Consolidado\Consolidado.Infrastructure\Repositories\SaldoRepository.cs
