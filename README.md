@@ -11,6 +11,7 @@ O diagrama abaixo descreve o fluxo de dados desde a entrada do lançamento até 
 ```mermaid
 graph TD
     User((Usuário))
+    IDP[Keycloak / OIDC]
     
     subgraph "Contexto de Lançamentos"
         API_L[Lancamentos.API]
@@ -27,14 +28,22 @@ graph TD
         Cache[(Redis)]
     end
 
-    User -- "1. POST /api/lancamentos" --> API_L
-    API_L -- "2. Persiste Lancamento + Outbox" --> DB_L
-    API_L -- "3. Publica Mensagem" --> Broker
-    Broker -- "4. Notifica Evento" --> API_C
-    API_C -- "5. Atualiza DB e Cache" --> DB_C
-    API_C -- "6. Invalida/Update" --> Cache
-    User -- "7. GET /api/consolidado/saldo" --> API_C
-    API_C -- "8. Consulta Rápida" --> Cache
+    User -- "1. Obtém Token" --> IDP
+    IDP -- "JWT" --> User
+    
+    User -- "2. POST /api/lancamentos (Auth: JWT)" --> API_L
+    API_L -- "3. Valida Token" --> IDP
+    
+    API_L -- "4. Persiste no DB + Outbox" --> DB_L
+    API_L -- "5. Publica Mensagem" --> Broker
+    
+    Broker -- "6. Notifica Evento" --> API_C
+    API_C -- "7. Atualiza DB e Cache" --> DB_C
+    API_C -- "8. Invalida/Update" --> Cache
+    
+    User -- "9. GET /api/consolidado/saldo (Auth: JWT)" --> API_C
+    API_C -- "10. Valida Token" --> IDP
+    API_C -- "11. Consulta Rápida" --> Cache
 ```
 
 ---
