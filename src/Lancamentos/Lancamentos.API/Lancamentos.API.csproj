@@ -25,6 +25,7 @@
     <PackageReference Include="OpenTelemetry.Exporter.Prometheus.AspNetCore" Version="1.11.0-beta.1" />
     <PackageReference Include="AspNetCore.HealthChecks.Npgsql" Version="9.0.0" />
     <PackageReference Include="AspNetCore.HealthChecks.RabbitMQ" Version="9.0.0" />
+
     <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="9.0.0" />
   </ItemGroup>
 </Project>

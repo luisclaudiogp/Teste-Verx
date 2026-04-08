@@ -1,96 +1,111 @@
-# Ecossistema Financeiro: Lançamentos e Consolidado
+# Ecossistema Financeiro: Gestão de Lançamentos e Saldos
 
-Este projeto é uma demonstração prática de uma arquitetura de microsserviços resiliente, focada em resolver desafios de alta vazão e consistência de dados. Aqui você encontrará padrões como **Transactional Outbox**, **CQRS** e **Event-Driven Architecture** aplicados de forma pragmática.
-
----
-
-## 🛠 O que tem "debaixo do capô"?
-
-Para garantir que o sistema aguente o tranco e seja fácil de manter, usamos:
-
-- **Microsserviços**: `Lancamentos.API` (Escrita) e `Consolidado.API` (Leitura).
-- **Mensageria**: RabbitMQ com MassTransit para garantir que nenhum dado se perca.
-- **Bancos de Dados**: PostgreSQL isolado por serviço.
-- **Cache**: Redis para que a consulta de saldo seja instantânea (sub-milissegundos).
-- **Segurança**: Identity Management com **Keycloak** (OIDC/JWT).
-- **Observabilidade**: OpenTelemetry exportando para Jaeger (Tracing) e Prometheus (Métricas).
+Este projeto implementa uma arquitetura de microsserviços voltada para alta disponibilidade e consistência eventual. O foco principal é demonstrar padrões modernos de desenvolvimento para sistemas financeiros, como **Transactional Outbox**, **Event-Driven Architecture** e **Cache-Aside**.
 
 ---
 
-## 🚀 Como subir o projeto
+## 🏗 Arquitetura do Sistema (C4 Model)
 
-O ecossistema todo sobe com um único comando (você só precisa do Docker instalado):
+O diagrama abaixo descreve o fluxo de dados desde a entrada do lançamento até a consolidação do saldo, destacando o papel estratégico do RabbitMQ e do Redis.
+
+```mermaid
+graph TD
+    User((Usuário))
+    
+    subgraph "Contexto de Lançamentos"
+        API_L[Lancamentos.API]
+        DB_L[(PostgreSQL)]
+    end
+    
+    subgraph "Mensageria"
+        Broker[RabbitMQ / MassTransit]
+    end
+    
+    subgraph "Contexto de Consolidação"
+        API_C[Consolidado.API]
+        DB_C[(PostgreSQL)]
+        Cache[(Redis)]
+    end
+
+    User -- "1. POST /api/lancamentos" --> API_L
+    API_L -- "2. Persiste Lancamento + Outbox" --> DB_L
+    API_L -- "3. Publica Mensagem" --> Broker
+    Broker -- "4. Notifica Evento" --> API_C
+    API_C -- "5. Atualiza DB e Cache" --> DB_C
+    API_C -- "6. Invalida/Update" --> Cache
+    User -- "7. GET /api/consolidado/saldo" --> API_C
+    API_C -- "8. Consulta Rápida" --> Cache
+```
+
+---
+
+## 🛠 Tecnologias e Padrões
+
+O ecossistema foi construído utilizando as seguintes tecnologias:
+
+- **Back-end**: .NET 10.0 (C#) com Clean Architecture.
+- **Mensageria**: RabbitMQ com MassTransit (garantia de entrega e retentativas).
+- **Armazenamento**: PostgreSQL (Dados transacionais) e Redis (Performance de leitura).
+- **Segurança**: Keycloak para gerenciamento de identidade e autenticação JWT.
+- **Observabilidade**: OpenTelemetry integrado ao Jaeger (Traces) e Prometheus (Métricas).
+
+---
+
+## 🚀 Guia de Execução
+
+Para subir o ambiente completo (infraestrutura e aplicações), utilize o Docker:
 
 ```bash
 docker compose up -d --build
 ```
 
-### Endpoints principais:
-- **Swagger/Scalar (Lançamentos)**: `http://localhost:5000/scalar/v1`
-- **Swagger/Scalar (Consolidado)**: `http://localhost:5001/scalar/v1`
-- **Jaeger (Tracing)**: `http://localhost:16686`
-- **Keycloak (Painel)**: `http://localhost:8081` (admin/admin)
+### Endpoints de Referência:
+- **API Lançamentos**: [http://localhost:5000/scalar/v1](http://localhost:5000/scalar/v1)
+- **API Consolidado**: [http://localhost:5001/scalar/v1](http://localhost:5001/scalar/v1)
+- **Painel Jaeger**: [http://localhost:16686](http://localhost:16686)
+- **Painel Keycloak**: [http://localhost:8081](http://localhost:8081) (Credenciais: `admin`/`admin`)
 
 ---
 
-## 🔐 Como testar o fluxo completo
+## 🔐 Procedimento de Teste
 
-Siga estes passos para ver a mágica da consistência eventual acontecendo:
+Siga os passos abaixo para validar o fluxo entre os serviços:
 
-### 1. Pegar o Token de Acesso
+### 1. Obtenção de Token
+Acesse a **Lancamentos.API** e utilize o endpoint `POST /api/Auth/token` com as credenciais:
+- **User**: `admin` | **Pass**: `admin`
+- Copie o `access_token` retornado.
 
-Acesse o Scalar da **Lancamentos.API** (`http://localhost:5000/scalar/v1`), procure o endpoint `POST /api/Auth/token` e use as credenciais:
+### 2. Autenticação
+No Scalar (Swagger), clique no botão **Authorize** e insira o token obtido. Repita este processo para a **Consolidado.API**.
 
-- **username**: `admin`
-- **password**: `admin`
-
-*Copie o `access_token` gerado.*
-
-### 2. Autorizar
-Clique no botão **Authorize** no topo do Scalar e cole o token. Repita isso no Scalar do **Consolidado** se for testar por lá também.
-
-### 3. Fazer um Lançamento
-Use o `POST /api/Lancamentos` para enviar um Crédito ou Débito.
-Exemplo de corpo:
+### 3. Registro de Lançamento
+Envie um novo lançamento via `POST /api/Lancamentos`:
 ```json
 {
-  "valor": 1500.00,
+  "valor": 1250.50,
   "tipo": "credito"
 }
 ```
 
-### 4. Consultar o Saldo
-
-Vá até a **Consolidado.API** (`http://localhost:5001/scalar/v1`) e execute o `GET /api/Consolidado/saldo`. O saldo estará atualizado.
-
----
-
-## 🛡 Teste de Resiliência (O Desafio)
-
-Quer ver o sistema se recuperando sozinho?
-1. Pare o RabbitMQ: `docker compose stop rabbitmq`.
-2. Faça alguns lançamentos na API. Eles serão salvos no banco, mas o saldo não vai mudar (porque o broker está fora).
-3. Suba o RabbitMQ: `docker compose start rabbitmq`.
-4. Em alguns segundos, o **Outbox Message** vai disparar os eventos pendentes e o saldo no Consolidado será corrigido automaticamente.
+### 4. Validação de Saldo
+Acesse a **Consolidado.API** e execute o `GET /api/Consolidado/saldo`. O valor acumulado refletirá o lançamento processado de forma assíncrona.
 
 ---
 
-## 📊 Código e Qualidade (SonarQube)
+## 🧪 Resiliência e Falhas (Simulação)
 
-Para rodar a análise de qualidade (SAST) localmente:
+Para validar o funcionamento do **Transactional Outbox**:
+1. Interrompa o serviço de mensageria: `docker compose stop rabbitmq`.
+2. Realize lançamentos via API. Note que a API responderá com sucesso, salvando os dados localmente.
+3. Reinicie o serviço: `docker compose start rabbitmq`.
+4. Observe no Jaeger (ou via consulta de saldo) que as mensagens "presas" no banco de dados foram processadas e o saldo foi sincronizado automaticamente.
 
-1. Garanta que o Sonar esteja de pé: `docker compose up -d sonarqube`.
-2. Rode o script de scan:
+---
+
+## 📊 Qualidade de Código
+O projeto está configurado para análise contínua no SonarQube. Para disparar um scan manual:
 ```powershell
 .\run-scan.ps1
 ```
-3. Veja o resultado em: `http://localhost:9000`. 
-*(O scan está configurado para ignorar arquivos de infraestrutura e focar apenas na sua lógica de negócio).*
-
----
-
-## 🏗 Arquitetura
-
-O sistema segue os princípios de **Clean Architecture** e **DDD**, garantindo que as regras de negócio fiquem isoladas de detalhes de implementação como banco de dados ou brokers de mensagem.
-
-Para uma visão visual detalhada, confira o documento na pasta `Documentacao/Arquitetura_Verx.html`.
+Acompanhe os resultados em: [http://localhost:9000](http://localhost:9000).

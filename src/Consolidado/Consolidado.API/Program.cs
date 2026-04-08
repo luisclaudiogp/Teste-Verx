@@ -16,6 +16,7 @@ using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.OpenApi;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -44,7 +45,10 @@ builder.Services.AddOpenTelemetry()
         .AddSource("Consolidado.API")
         .AddSource("MassTransit")
         .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("Consolidado.API"))
-        .AddAspNetCoreInstrumentation()
+        .AddAspNetCoreInstrumentation(options => 
+        {
+            options.Filter = (httpContext) => !httpContext.Request.Path.StartsWithSegments("/health");
+        })
         .AddHttpClientInstrumentation()
         .AddEntityFrameworkCoreInstrumentation()
         .AddOtlpExporter(opt => opt.Endpoint = new Uri(builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]!)))

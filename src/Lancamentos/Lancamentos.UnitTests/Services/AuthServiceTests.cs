@@ -89,7 +89,7 @@ public class AuthServiceTests
 
         var result = await service.GenerateTokenAsync("user", "pass");
 
-        // Assert
+
         result.Success.Should().BeFalse();
         result.StatusCode.Should().Be(401);
         result.ErrorMessage.Should().Be("Invalid credentials");

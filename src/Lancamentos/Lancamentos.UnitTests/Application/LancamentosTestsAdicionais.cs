@@ -48,7 +48,6 @@ public class LancamentosTestsAdicionais
         _repositoryMock.Setup(r => r.AddAsync(It.IsAny<Lancamentos.Domain.Entities.Lancamento>()))
             .ThrowsAsync(new Exception("Erro de banco"));
 
-        // Act & Assert
     }
     [Theory]
     [InlineData("debito")]

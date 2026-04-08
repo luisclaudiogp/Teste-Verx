@@ -29,10 +29,10 @@ public class LancamentoServiceTests
     [InlineData(50, "Credito")]
     public async Task CriarLancamentoAsync_DeveSalvarEPublicarEvento(decimal valor, string tipo)
     {
-        // Act
+
         await _service.CriarLancamentoAsync(valor, tipo);
 
-        // Assert
+
         _repositoryMock.Verify(r => r.AddAsync(It.Is<Lancamento>(l => 
             l.Valor == valor && l.Tipo == tipo)), Times.Once);
         

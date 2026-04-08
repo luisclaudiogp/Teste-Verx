@@ -32,7 +32,7 @@ public class SaldoService : ISaldoService
         var dataUtc = DateTime.SpecifyKind(data.Date, DateTimeKind.Utc);
         string cacheKey = $"saldo_{dataUtc:yyyy-MM-dd}";
 
-        // Tenta obter do Cache (Redis)
+
         var cachedData = await _cache.GetStringAsync(cacheKey);
         if (!string.IsNullOrEmpty(cachedData))
         {
@@ -40,7 +40,7 @@ public class SaldoService : ISaldoService
             return JsonSerializer.Deserialize<SaldoDiario>(cachedData);
         }
 
-        // Se não houver no cache, busca no DB
+
         _logger.LogInformation("Cache Miss para saldo de {Data}, buscando no banco.", dataUtc);
         var saldo = await _repository.GetByDataAsync(dataUtc);
 
@@ -77,7 +77,7 @@ public class SaldoService : ISaldoService
 
         await _repository.SaveChangesAsync();
 
-        // Invalida o Cache após atualização para garantir consistência
+
         string cacheKey = $"saldo_{dataUtc:yyyy-MM-dd}";
         await _cache.RemoveAsync(cacheKey);
         _logger.LogInformation("Cache invalidado para {Data} após atualização.", dataUtc);

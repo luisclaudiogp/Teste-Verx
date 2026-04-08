@@ -3,7 +3,7 @@ Write-Host "Iniciando processo de Scan DUPLO do SonarQube..."
 # 1. Instalar ferramenta se nao existir
 dotnet tool install --global dotnet-sonarscanner
 
-$token = "sqa_c290ad5cb10e63c5a7596329da9a4aa4382826b8"
+$token = "sqa_2e39dde703d9e37369c8410e5badbe59acd07b56"
 
 # ========================================================
 # PROJETO 1: Lançamentos

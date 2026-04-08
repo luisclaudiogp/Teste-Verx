@@ -37,7 +37,10 @@ builder.Services.AddOpenTelemetry()
         .AddSource("Lancamentos.API")
         .AddSource("MassTransit")
         .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("Lancamentos.API"))
-        .AddAspNetCoreInstrumentation()
+        .AddAspNetCoreInstrumentation(options => 
+        {
+            options.Filter = (httpContext) => !httpContext.Request.Path.StartsWithSegments("/health");
+        })
         .AddHttpClientInstrumentation()
         .AddEntityFrameworkCoreInstrumentation()
         .AddOtlpExporter(opt => opt.Endpoint = new Uri(builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]!)))
