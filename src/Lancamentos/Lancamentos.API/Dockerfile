@@ -15,8 +15,9 @@ COPY ["src/Shared.Contracts/Shared.Contracts.csproj", "src/Shared.Contracts/"]
 
 RUN dotnet restore "src/Lancamentos/Lancamentos.API/Lancamentos.API.csproj"
 
-# Copiar todo o resto e buildar
-COPY . .
+# Copiar apenas os diretórios necessários e buildar
+COPY src/Lancamentos/ src/Lancamentos/
+COPY src/Shared.Contracts/ src/Shared.Contracts/
 WORKDIR "/src/src/Lancamentos/Lancamentos.API"
 RUN dotnet build "Lancamentos.API.csproj" -c Release -o /app/build
 
@@ -26,4 +27,5 @@ RUN dotnet publish "Lancamentos.API.csproj" -c Release -o /app/publish
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+USER app
 ENTRYPOINT ["dotnet", "Lancamentos.API.dll"]

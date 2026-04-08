@@ -1,0 +1,27 @@
+# Git
+.git/
+.gitignore
+
+# Sonar / Testes
+.sonarqube/
+.sonar/
+coverage.opencover.xml
+TestResults/
+
+# .NET Build artifacts
+**/bin/
+**/obj/
+*.user
+*.pdb
+
+# Local environment
+.env
+
+# Docker
+.dockerignore
+docker-compose*
+
+# IDE settings
+.vs/
+.idea/
+*.sln.iml

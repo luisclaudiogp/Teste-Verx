@@ -53,4 +53,16 @@ public class ConsolidadoControllerTests
         var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
         okResult.Value.Should().NotBeNull();
     }
+
+    [Fact]
+    public async Task GetSaldoDiario_DeveLancarExcecao_QuandoServicoFalha()
+    {
+        // Arrange
+        var data = DateTime.UtcNow.Date;
+        _serviceMock.Setup(s => s.GetSaldoDiarioAsync(data))
+            .ThrowsAsync(new System.Exception("Erro de banco"));
+
+        // Act & Assert
+        await Assert.ThrowsAsync<System.Exception>(() => _controller.GetSaldoDiario(data));
+    }
 }

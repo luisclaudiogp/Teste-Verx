@@ -1,0 +1,119 @@
+<mxfile host="Electron" modified="2024-04-08T15:00:00.000Z" agent="Mozilla/5.0" version="24.0.0" type="device">
+  <diagram id="verx-arch" name="Arquitetura CQRS">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" background="#ffffff" math="0" shadow="1">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- BOUNDINGS / CONTAINERS -->
+        <mxCell id="k8s_cluster" value="Cluster Kubernetes (Infraestrutura Escalável)" style="swimlane;whiteSpace=wrap;html=1;fillColor=#f8fafc;fontColor=#0f172a;strokeColor=#3b82f6;strokeWidth=2;startSize=30;dashed=1;fontStyle=1;rounded=1;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="240" y="40" width="720" height="650" as="geometry" />
+        </mxCell>
+
+        <!-- NODES -->
+        <!-- Estilo com texto alinhado na parte inferior para dar espaço superior para os logotipos das tecnologias -->
+        
+        <mxCell id="client" value="Client App&#10;(Web / Mobile)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#10b981;fontColor=#ffffff;strokeColor=#047857;strokeWidth=2;verticalAlign=bottom;spacingBottom=10;fontStyle=1;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="200" width="150" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="api_gateway" value="API Gateway&#10;(Roteamento de Tráfego)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1e293b;fontColor=#ffffff;strokeColor=#0f172a;strokeWidth=2;verticalAlign=bottom;spacingBottom=10;fontStyle=1;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="280" y="200" width="150" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="keycloak" value="Keycloak&#10;(Identity &amp; Tokens)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#8b5cf6;fontColor=#ffffff;strokeColor=#6d28d9;strokeWidth=2;verticalAlign=bottom;spacingBottom=10;fontStyle=1;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="280" y="450" width="150" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- APIs em Vermelho Verx Falso/Sólido para destaque -->
+        <mxCell id="lancamentos_api" value="Lançamentos API&#10;(CQRS - COMMAND)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dc2626;fontColor=#ffffff;strokeColor=#991b1b;strokeWidth=2;verticalAlign=bottom;spacingBottom=10;fontStyle=1;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="500" y="100" width="150" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="consolidado_api" value="Consolidado API&#10;(CQRS - QUERY)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dc2626;fontColor=#ffffff;strokeColor=#991b1b;strokeWidth=2;verticalAlign=bottom;spacingBottom=10;fontStyle=1;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="500" y="320" width="150" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="pg_lancamentos" value="Banco Postgres&#10;(Transacional)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#0ea5e9;fontColor=#ffffff;strokeColor=#0369a1;strokeWidth=2;verticalAlign=bottom;spacingBottom=10;fontStyle=1;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="750" y="100" width="150" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="rabbitmq" value="RabbitMQ&#10;(Message Broker)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f59e0b;fontColor=#ffffff;strokeColor=#b45309;strokeWidth=2;verticalAlign=bottom;spacingBottom=10;fontStyle=1;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="750" y="210" width="150" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="redis" value="Redis&#10;(Cache de Leitura)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f59e0b;fontColor=#ffffff;strokeColor=#b45309;strokeWidth=2;verticalAlign=bottom;spacingBottom=10;fontStyle=1;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="750" y="320" width="150" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="pg_consolidado" value="Banco Postgres&#10;(Visão Materializada)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#0ea5e9;fontColor=#ffffff;strokeColor=#0369a1;strokeWidth=2;verticalAlign=bottom;spacingBottom=10;fontStyle=1;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="750" y="440" width="150" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="otel" value="Jaeger &amp; Prometheus&#10;(OpenTelemetry)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#475569;fontColor=#ffffff;strokeColor=#1e293b;strokeWidth=2;verticalAlign=bottom;spacingBottom=10;fontStyle=1;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="500" y="550" width="400" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- EDGES -->
+        <!-- Estética mais escura para os conectores da rede -->
+        
+        <mxCell id="e_auth" value="Login" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=3;fontColor=#1e293b;strokeColor=#1e293b;fontStyle=1" edge="1" parent="1" source="client" target="keycloak">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="115" y="495" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="e_gw" value="Request Seguro (HTTPS)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=3;fontColor=#1e293b;strokeColor=#1e293b;fontStyle=1" edge="1" parent="1" source="client" target="api_gateway">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_route_write" value="POST, PUT" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=3;fontColor=#1e293b;strokeColor=#1e293b;fontStyle=1" edge="1" parent="1" source="api_gateway" target="lancamentos_api">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_route_read" value="GET" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=3;fontColor=#1e293b;strokeColor=#1e293b;fontStyle=1" edge="1" parent="1" source="api_gateway" target="consolidado_api">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_db1" value="Salva" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=3;fontColor=#1e293b;strokeColor=#1e293b;fontStyle=1" edge="1" parent="1" source="lancamentos_api" target="pg_lancamentos">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_pub" value="Publica" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=3;fontColor=#1e293b;strokeColor=#1e293b;fontStyle=1" edge="1" parent="1" source="lancamentos_api" target="rabbitmq">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="575" y="200" />
+              <mxPoint x="710" y="200" />
+              <mxPoint x="710" y="240" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="e_sub" value="Consome" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=3;fontColor=#1e293b;strokeColor=#1e293b;fontStyle=1" edge="1" parent="1" source="rabbitmq" target="consolidado_api">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="710" y="280" />
+              <mxPoint x="710" y="365" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="e_cache" value="Consulta/Salva" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=3;fontColor=#1e293b;strokeColor=#1e293b;fontStyle=1" edge="1" parent="1" source="consolidado_api" target="redis">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_db2" value="Refresh" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=3;fontColor=#1e293b;strokeColor=#1e293b;fontStyle=1" edge="1" parent="1" source="consolidado_api" target="pg_consolidado">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="670" y="380" />
+              <mxPoint x="670" y="470" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

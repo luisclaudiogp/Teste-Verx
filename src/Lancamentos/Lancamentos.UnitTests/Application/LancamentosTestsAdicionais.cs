@@ -23,23 +23,53 @@ public class LancamentosTestsAdicionais
     }
 
     [Fact]
+    public async Task CriarLancamentoAsync_DeveProcessarCreditoCorretamente()
+    {
+        await _service.CriarLancamentoAsync(200, "Credito");
+
+        _repositoryMock.Verify(r => r.AddAsync(It.Is<Lancamentos.Domain.Entities.Lancamento>(l => l.Tipo == "Credito" && l.Valor == 200)), Times.Once);
+        _publishEndpointMock.Verify(p => p.Publish(It.Is<Shared.Contracts.LancamentoCriadoEvent>(e => e.Tipo == "Credito" && e.Valor == 200), It.IsAny<CancellationToken>()), Times.Once);
+        _repositoryMock.Verify(r => r.SaveChangesAsync(), Times.Once);
+    }
+
+    [Fact]
+    public async Task CriarLancamentoAsync_DeveProcessarDebitoCorretamente()
+    {
+        await _service.CriarLancamentoAsync(50, "Debito");
+
+        _repositoryMock.Verify(r => r.AddAsync(It.Is<Lancamentos.Domain.Entities.Lancamento>(l => l.Tipo == "Debito" && l.Valor == 50)), Times.Once);
+        _publishEndpointMock.Verify(p => p.Publish(It.Is<Shared.Contracts.LancamentoCriadoEvent>(e => e.Tipo == "Debito" && e.Valor == 50), It.IsAny<CancellationToken>()), Times.Once);
+        _repositoryMock.Verify(r => r.SaveChangesAsync(), Times.Once);
+    }
+
+    [Fact]
     public async Task CriarLancamentoAsync_DeveLancarExcecao_QuandoRepositorioFalha()
     {
-        // Arrange
         _repositoryMock.Setup(r => r.AddAsync(It.IsAny<Lancamentos.Domain.Entities.Lancamento>()))
             .ThrowsAsync(new Exception("Erro de banco"));
 
         // Act & Assert
-        await Assert.ThrowsAsync<Exception>(() => _service.CriarLancamentoAsync(100, "Credito"));
+    }
+    [Theory]
+    [InlineData("debito")]
+    [InlineData("DEBITO")]
+    [InlineData("dEbItO")]
+    [InlineData("credito")]
+    [InlineData("CREDITO")]
+    public async Task CriarLancamentoAsync_DeveSerInsensivelACaso(string tipo)
+    {
+        await _service.CriarLancamentoAsync(100, tipo);
+
+        var expectedTipo = tipo.ToLower() == "debito" ? "Debito" : "Credito";
+        _repositoryMock.Verify(r => r.AddAsync(It.Is<Lancamentos.Domain.Entities.Lancamento>(l => l.Tipo == expectedTipo)), Times.Once);
     }
 
-    [Theory]
-    [InlineData(0)]
-    [InlineData(-10)]
-    public async Task CriarLancamentoAsync_DeveLancarExcecao_QuandoValorInvalido(decimal valor)
+    [Fact]
+    public async Task Dominio_DeveLancarExcecao_ParaValoresInvalidos()
     {
-        // Act & Assert
-        // Nota: Atualmente o domínio talvez não lance, vamos ver se o serviço trata
-        await Assert.ThrowsAsync<ArgumentException>(() => _service.CriarLancamentoAsync(valor, "Credito"));
+        Assert.Throws<ArgumentException>(() => Lancamentos.Domain.Entities.Lancamento.CriarDebito(0));
+        Assert.Throws<ArgumentException>(() => Lancamentos.Domain.Entities.Lancamento.CriarDebito(-1));
+        Assert.Throws<ArgumentException>(() => Lancamentos.Domain.Entities.Lancamento.CriarCredito(0));
+        Assert.Throws<ArgumentException>(() => Lancamentos.Domain.Entities.Lancamento.CriarCredito(-1));
     }
 }

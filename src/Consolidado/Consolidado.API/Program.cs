@@ -1,5 +1,6 @@
 using Consolidado.Application.Consumers;
 using Consolidado.Application.Services;
+using Shared.Contracts.Services;
 using Consolidado.Domain.Repositories;
 using Consolidado.Infrastructure.Data;
 using Consolidado.Infrastructure.Repositories;
@@ -17,7 +18,6 @@ using Microsoft.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Segurança (JWT / Keycloak)
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -33,14 +33,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 builder.Services.AddAuthorization();
 
-// 2. Escalabilidade (Redis Cache)
 builder.Services.AddStackExchangeRedisCache(options =>
 {
     options.Configuration = builder.Configuration["Redis:ConnectionString"];
     options.InstanceName = "Consolidado_";
 });
 
-// 3. Observabilidade (OpenTelemetry)
 builder.Services.AddOpenTelemetry()
     .WithTracing(tracing => tracing
         .AddSource("Consolidado.API")
@@ -55,7 +53,6 @@ builder.Services.AddOpenTelemetry()
         .AddRuntimeInstrumentation()
         .AddPrometheusExporter());
 
-// 4. Resiliência (Health Checks)
 var rabbitHost = builder.Configuration["RabbitMQ:Host"];
 var rabbitUser = builder.Configuration["RabbitMQ:Username"];
 var rabbitPass = builder.Configuration["RabbitMQ:Password"];
@@ -73,16 +70,14 @@ builder.Services.AddHealthChecks()
     .AddRedis(builder.Configuration["Redis:ConnectionString"]!)
     .AddRabbitMQ();
 
-// Configuração do DB
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ConsolidadoDbContext>(options =>
     options.UseNpgsql(connectionString));
 
-// Injeção de Dependência - Camadas
 builder.Services.AddScoped<ISaldoRepository, SaldoRepository>();
 builder.Services.AddScoped<ISaldoService, SaldoService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
-// MassTransit
 builder.Services.AddMassTransit(x =>
 {
     x.AddConsumer<LancamentoCriadoConsumer>();
@@ -138,7 +133,6 @@ builder.Services.AddOpenApi(options =>
 
 var app = builder.Build();
 
-// Middlewares
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
@@ -148,7 +142,6 @@ if (app.Environment.IsDevelopment())
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Endpoints de Resiliência e Monitoramento
 app.MapHealthChecks("/health", new HealthCheckOptions
 {
     Predicate = _ => true,
@@ -156,7 +149,6 @@ app.MapHealthChecks("/health", new HealthCheckOptions
 });
 app.UseOpenTelemetryPrometheusScrapingEndpoint();
 
-// Resiliência na Inicialização do Banco
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<ConsolidadoDbContext>();

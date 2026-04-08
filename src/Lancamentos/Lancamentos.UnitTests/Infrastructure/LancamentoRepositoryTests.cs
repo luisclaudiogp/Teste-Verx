@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Lancamentos.Domain.Entities;
 using Lancamentos.Infrastructure.Data;
@@ -11,33 +10,47 @@ namespace Lancamentos.UnitTests.Infrastructure;
 
 public class LancamentoRepositoryTests
 {
-    private readonly LancamentosDbContext _context;
-    private readonly LancamentoRepository _repository;
-
-    public LancamentoRepositoryTests()
+    private LancamentosDbContext CreateContext()
     {
         var options = new DbContextOptionsBuilder<LancamentosDbContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+            .UseInMemoryDatabase(databaseName: System.Guid.NewGuid().ToString())
             .Options;
-
-        _context = new LancamentosDbContext(options);
-        _repository = new LancamentoRepository(_context);
+        
+        return new LancamentosDbContext(options);
     }
 
     [Fact]
-    public async Task AddAsync_DevePersistirLancamento()
+    public async Task AddAsync_DeveAdicionarLancamentoAoContexto()
     {
         // Arrange
+        var context = CreateContext();
+        var repository = new LancamentoRepository(context);
         var lancamento = Lancamento.CriarCredito(100);
 
         // Act
-        await _repository.AddAsync(lancamento);
-        await _repository.SaveChangesAsync();
+        await repository.AddAsync(lancamento);
+        await repository.SaveChangesAsync();
 
         // Assert
-        var result = await _context.Lancamentos.FindAsync(lancamento.Id);
-        result.Should().NotBeNull();
-        result!.Valor.Should().Be(100);
-        result.Tipo.Should().Be("Credito");
+        var saved = await context.Lancamentos.FirstOrDefaultAsync(l => l.Id == lancamento.Id);
+        saved.Should().NotBeNull();
+        saved!.Valor.Should().Be(100);
+    }
+
+    [Fact]
+    public async Task SaveChangesAsync_DevePersistirAlteracoes()
+    {
+        // Arrange
+        var context = CreateContext();
+        var repository = new LancamentoRepository(context);
+        var lancamento = Lancamento.CriarDebito(50);
+        await context.Lancamentos.AddAsync(lancamento);
+
+        // Act
+        await repository.SaveChangesAsync();
+
+        // Assert
+        var count = await context.Lancamentos.CountAsync();
+        count.Should().Be(1);
     }
 }

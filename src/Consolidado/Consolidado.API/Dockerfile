@@ -15,8 +15,9 @@ COPY ["src/Shared.Contracts/Shared.Contracts.csproj", "src/Shared.Contracts/"]
 
 RUN dotnet restore "src/Consolidado/Consolidado.API/Consolidado.API.csproj"
 
-# Copiar todo o resto e buildar
-COPY . .
+# Copiar apenas os diretórios necessários e buildar
+COPY src/Consolidado/ src/Consolidado/
+COPY src/Shared.Contracts/ src/Shared.Contracts/
 WORKDIR "/src/src/Consolidado/Consolidado.API"
 RUN dotnet build "Consolidado.API.csproj" -c Release -o /app/build
 
@@ -26,4 +27,5 @@ RUN dotnet publish "Consolidado.API.csproj" -c Release -o /app/publish
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+USER app
 ENTRYPOINT ["dotnet", "Consolidado.API.dll"]

@@ -22,14 +22,26 @@ public class LancamentosControllerTests
     [Fact]
     public async Task Criar_DeveRetornarOk_QuandoSucesso()
     {
-        // Arrange
-        var request = new CriarLancamentoRequest(100m, "Credito");
+        var request = new CriarLancamentoRequest(100, "Credito");
+        _serviceMock.Setup(s => s.CriarLancamentoAsync(It.IsAny<decimal>(), It.IsAny<string>()))
+            .Returns(Task.CompletedTask);
 
-        // Act
         var result = await _controller.Criar(request);
 
-        // Assert
-        result.Should().BeOfType<OkObjectResult>();
-        _serviceMock.Verify(s => s.CriarLancamentoAsync(request.Valor, request.Tipo), Times.Once);
+        var okResult = result as OkObjectResult;
+        okResult.Should().NotBeNull();
+        okResult!.StatusCode.Should().Be(200);
+        _serviceMock.Verify(s => s.CriarLancamentoAsync(100, "Credito"), Times.Once);
+    }
+
+    [Fact]
+    public async Task Criar_DeveLancarExcecao_QuandoServicoFalha()
+    {
+        var request = new CriarLancamentoRequest(100, "Credito");
+        _serviceMock.Setup(s => s.CriarLancamentoAsync(It.IsAny<decimal>(), It.IsAny<string>()))
+            .ThrowsAsync(new System.Exception("Erro interno"));
+
+        // Act & Assert
+        await Assert.ThrowsAsync<System.Exception>(() => _controller.Criar(request));
     }
 }

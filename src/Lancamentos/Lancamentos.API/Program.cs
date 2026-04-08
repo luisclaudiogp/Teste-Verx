@@ -1,4 +1,5 @@
 using Lancamentos.Application.Services;
+using Shared.Contracts.Services;
 using Lancamentos.Domain.Repositories;
 using Lancamentos.Infrastructure.Data;
 using Lancamentos.Infrastructure.Repositories;
@@ -16,7 +17,6 @@ using Microsoft.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Segurança (JWT / Keycloak)
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -32,7 +32,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 builder.Services.AddAuthorization();
 
-// 2. Observabilidade (OpenTelemetry)
 builder.Services.AddOpenTelemetry()
     .WithTracing(tracing => tracing
         .AddSource("Lancamentos.API")
@@ -47,7 +46,6 @@ builder.Services.AddOpenTelemetry()
         .AddRuntimeInstrumentation()
         .AddPrometheusExporter());
 
-// 3. Resiliência (Health Checks)
 var rabbitHost = builder.Configuration["RabbitMQ:Host"];
 var rabbitUser = builder.Configuration["RabbitMQ:Username"];
 var rabbitPass = builder.Configuration["RabbitMQ:Password"];
@@ -64,22 +62,21 @@ builder.Services.AddHealthChecks()
     .AddNpgSql(builder.Configuration.GetConnectionString("DefaultConnection")!)
     .AddRabbitMQ();
 
-// Configuração do DB
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<LancamentosDbContext>(options =>
     options.UseNpgsql(connectionString));
 
-// Injeção de Dependência - Camadas
 builder.Services.AddScoped<ILancamentoRepository, LancamentoRepository>();
 builder.Services.AddScoped<ILancamentoService, LancamentoService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
-// MassTransit com Outbox
 builder.Services.AddMassTransit(x =>
 {
     x.AddEntityFrameworkOutbox<LancamentosDbContext>(o =>
     {
         o.UsePostgres();
         o.UseBusOutbox();
+        o.DuplicateDetectionWindow = TimeSpan.FromMinutes(30);
     });
 
     x.UsingRabbitMq((context, cfg) =>
@@ -90,6 +87,8 @@ builder.Services.AddMassTransit(x =>
             h.Username(rabbitConfig["Username"]!);
             h.Password(rabbitConfig["Password"]!);
         });
+
+        cfg.ConfigureEndpoints(context);
     });
 });
 
@@ -127,7 +126,6 @@ builder.Services.AddOpenApi(options =>
 
 var app = builder.Build();
 
-// Middlewares
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
@@ -137,7 +135,6 @@ if (app.Environment.IsDevelopment())
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Endpoints de Resiliência e Monitoramento
 app.MapHealthChecks("/health", new HealthCheckOptions
 {
     Predicate = _ => true,
@@ -145,7 +142,6 @@ app.MapHealthChecks("/health", new HealthCheckOptions
 });
 app.UseOpenTelemetryPrometheusScrapingEndpoint();
 
-// Resiliência na Inicialização do Banco
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<LancamentosDbContext>();

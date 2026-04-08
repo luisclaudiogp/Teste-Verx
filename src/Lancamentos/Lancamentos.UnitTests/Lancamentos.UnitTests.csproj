@@ -6,6 +6,7 @@
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
     <DefaultItemExcludes>$(DefaultItemExcludes);UnitTest1.cs;Consumers\**</DefaultItemExcludes>
+    <NoWarn>$(NoWarn);NU1603</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

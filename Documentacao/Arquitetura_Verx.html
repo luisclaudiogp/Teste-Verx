@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentação de Arquitetura - Teste Verx</title>
+    <!-- Fonte corporativa -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #dc2626; /* Vermelho forte corporativo (Verx) */
+            --secondary-color: #334155; /* Cinza escuro para equilíbrio */
+            --accent-color: #ef4444; /* Vermelho destaque */
+            --text-color: #1e293b;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.7;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background-color: var(--card-bg);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border-radius: 8px;
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        header {
+            border-bottom: 3px solid var(--primary-color);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            color: var(--secondary-color);
+            font-size: 1.5rem;
+            margin-top: 40px;
+            border-left: 4px solid var(--accent-color);
+            padding-left: 10px;
+        }
+        
+        h3 {
+            color: var(--primary-color);
+            font-size: 1.2rem;
+        }
+
+        p {
+            font-size: 1rem;
+            color: #475569;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        strong {
+            color: var(--primary-color);
+        }
+
+        .architecture-diagram {
+            background-color: #f1f5f9;
+            border: 1px dashed var(--secondary-color);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            margin: 30px 0;
+            color: var(--secondary-color);
+            font-weight: 500;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .card {
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .tech-pill {
+            display: inline-block;
+            background-color: #fee2e2; /* Fundo vermelho bem clarinho */
+            color: #991b1b; /* Texto vermelho escuro */
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-right: 5px;
+            margin-bottom: 8px;
+        }
+
+        .sonar-placeholder {
+            border: 2px dashed #94a3b8;
+            background-color: #f8fafc;
+            border-radius: 8px;
+            padding: 40px 20px;
+            text-align: center;
+            color: #64748b;
+            margin-top: 15px;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .sonar-placeholder p {
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+
+        /* Configurações otimizadas para impressão em PDF */
+        @media print {
+            body { 
+                background-color: white; 
+                margin: 1.5cm; /* Compensa a margem zerada do OS */
+            }
+            .container { box-shadow: none; margin: 0; padding: 0; width: 100%; max-width: 100%; }
+            .card { break-inside: avoid; }
+            .page-break { page-break-before: always; align-content: flex-start; }
+            @page { 
+                size: auto;
+                margin: 0mm; /* Força o navegador a omitir cabeçalho e rodapé (onde fica o path) */
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <img src="imagens/logo.png" alt="Verx Tecnologia e Inovação" style="max-height: 70px; margin-bottom: 15px;">
+        <h1>Teste prático Verx - Documentação de Arquitetura</h1>
+        <p>Visão geral do design da solução, decisões arquiteturais (CQRS & Event-Driven) e Stack Tecnológica.</p>
+    </header>
+
+    <section>
+        <h2>1. Visão Geral da Solução</h2>
+        <p>
+            O sistema foi construído visando <strong>alta disponibilidade, escalabilidade e resiliência</strong>. O domínio da aplicação consiste na gestão de lançamentos financeiros (crédito e débito) e na consolidação e exibição de um saldo diário.
+            Para suportar um cenário onde o volume de leituras do saldo pode divergir amplamente do volume de inserções de caixa (por exemplo, sistemas muito intensos em leitura na virada do dia ou de grande volume de transações ao longo do dia), optou-se pela separação conceitual e física das responsabilidades.
+        </p>
+    </section>
+
+    <section>
+        <h2>2. Decisões Arquiteturais</h2>
+        <p>A arquitetura principal repousa em dois pilares: <strong>CQRS (Command-Query Responsibility Segregation)</strong> a nível de microsserviços e <strong>Event-Driven Architecture (Arquitetura orientada a eventos)</strong>.</p>
+        
+        <!-- Desenho de Arquitetura Finalizado -->
+        <div style="text-align: center; margin: 30px 0;">
+            <img src="imagens/Desenho_de_arquitetura.drawio.png" alt="Fluxo Arquitetural Teste Verx" style="max-width: 100%; display: inline-block;">
+        </div>
+
+        <div class="card-grid">
+            <div class="card">
+                <h3>Microsserviço de Lançamentos (Escrita)</h3>
+                <p>Neste módulo ocorre a ingestão dos dados. Ele representa o <strong>Command</strong> da nossa arquitetura. Suas funções são validar regras de negócio rígidas (se o valor do lançamento é positivo, autenticação, etc) e persistir o dado no banco de forma segura.</p>
+                <p>Ele não se preocupa em acumular saldos. O principal objetivo é processar a entrada de dados com throughput extremo.</p>
+            </div>
+            <div class="card">
+                <h3>Microsserviço de Consolidado (Leitura)</h3>
+                <p>Este módulo representa a <strong>Query</strong>. Construído para ser extremamente rápido, é o serviço consultado pelo usuário final ou outros sistemas para resgatar o saldo. Para não impactar o banco de dados principal de escritas de Lançamento, ele mantém sua própria base de dados (projeção local) otimizada para a leitura do dia e emprega Caching Distribuído.</p>
+            </div>
+        </div>
+
+        <h3>2.1 Por que 2 Microssegviços e Padrão CQRS?</h3>
+        <ul>
+            <li><strong>Escalabilidade Independente:</strong> Em dias de pico volumétrico (ex: Black Friday, pagamento de folhas), podemos escalar o banco de dados e os pods da API (Containers) do 'Lançamentos' e 'Consolidado' de forma separada segundo a necessidade de Hardware.</li>
+            <li><strong>Isolamento de Falhas:</strong> Se o serviço ou banco de dados que consulta o saldo diário cair, o caixa continua realizando recebimentos e inserindo dados normalmente, mantendo a empresa operante.</li>
+            <li><strong>Otimização de Modelagem:</strong> A base de Lançamentos usa uma modelagem voltada para Inserção (Append-Only para transações), enquanto a Consolidado tem as tabelas desnormalizadas e apenas agregadas por dia, somadas ao disparo via Cache Redis. Leituras ocorrem em O(1) sem agredir consultas (JOINs, SUMs) custosas.</li>
+        </ul>
+
+        <h3>2.2 Comunicação Assíncrona e Event-Driven (RabbitMQ)</h3>
+        <p>Para unir o mundo da Escrita com o da Leitura sem criar acoplamento temporal (onde um serviço derrubaria o outro através de HTTP Direto/REST se estivesse lento), foi adotado um modelo <strong>Event-Driven (Mensageria)</strong> usando o RabbitMQ e o core do MassTransit:</p>
+        <p>
+            Sempre que o Serviço de Lançamentos persite uma operação (Ex: Débito de $50), ele emite um evento (<code>LancamentoCriadoEvent</code>) para um Message Broker interno. Imediatamente (trazendo o conceito de Consistência Eventual e Tempo Real), o serviço de Consolidado reage a essa mensagem lendo a fila, calculando o saldo localmente em seu banco próprio banco, invalidando os caches e preparando a vitrine de leituas novamente.
+        </p>
+    </section>
+
+    <!-- Usado para a conversão de PDF de forma organizada -->
+    <div class="page-break"></div>
+
+    <section>
+        <h2>3. Stack Tecnológica Base</h2>
+        <p>Para assegurar que as melhores práticas de mercado foram aplicadas e demonstrar domínio sobre stacks corporativos de ponta, o ecossistema abrange tecnologias de Alta Performance e Observabilidade nativa:</p>
+        
+        <div style="margin-top: 15px;">
+            <span class="tech-pill">.NET 10 (C#)</span>
+            <span class="tech-pill">PostgreSQL</span>
+            <span class="tech-pill">Redis Cache</span>
+            <span class="tech-pill">RabbitMQ</span>
+            <span class="tech-pill">MassTransit</span>
+            <span class="tech-pill">Keycloak (OAuth2 / JWT)</span>
+            <span class="tech-pill">OpenTelemetry</span>
+            <span class="tech-pill">Jaeger</span>
+            <span class="tech-pill">Prometheus</span>
+            <span class="tech-pill">Docker + Docker Compose</span>
+            <span class="tech-pill">SonarQube</span>
+        </div>
+
+        <ul style="margin-top: 20px;">
+            <li><strong>Segurança Centralizada (Keycloak):</strong> A proteção de endpoints foi delegada ao Keycloak atuando como Identity Provider emitindo JWTs, simplificando a gerência de autenticação que requer Zero Trust Security e tirando do desenvolvedor a responsabilidade de gerenciar as senhas criptografadas.</li>
+            <li><strong>Cache Alta Volagem (Redis):</strong> No microserviço Consolidado, antes de efetuar consultas ao PostgreSQL, a aplicação verifica a existência de dados quentes no Redis. Isto tira drásticamente a carga do banco tradicional e entrega requisições em latências menores.</li>
+            <li><strong>Observabilidade Unificada:</strong> Toda a rastreabilidade da requisisão HTTP até as mensagens enfileiradas no RabbitMQ estão instrumentadas via <em>OpenTelemetry</em> com métricas de negócios expostas via prometheus e o tracking de logs no Jaeger.</li>
+        </ul>
+    </section>
+
+    <section>
+        <h2>4. Qualidade de Código & Clean Architecture</h2>
+        <p>O conceito de Clean Code e Clean Architecture foi adotado de ponta a ponta no repositório.</p>
+        <p>Todas as entidades redundantes foram unificadas via camadas de **Domain e Contracts**. As regras de exceções, falhas em bancos e persistencia async assíncrona foram amplamente testadas utilizando <code>xUnit, Moq, FluentAssertions</code> com suporte de Mock HTTP e MessageBroker em cenários unitários e de Integração.</p>
+        
+        <h3>Resultados do Quality Gate no SonarQube</h3>
+        <p>Comprovando as boas práticas e atendendo os requisitos do processo, os resultados das varreduras atestam <strong>elevada Cobertura de Testes Unitários (>80%)</strong>, ausência de duplicidades críticas (Duplicates reduzidas) e 0 Bugs críticos.</p>
+
+        <!-- Prints do SonarQube -->
+        <div style="margin-top: 30px; text-align: center;">
+            <p style="color: #64748b; margin-bottom: 5px;"><strong>Dashboard - Microsserviço API Lançamentos</strong></p>
+            <img src="imagens/Sonar_lancamento.png" alt="Métricas SonarQube Lançamentos" style="max-width: 100%; border: 1px solid #e2e8f0; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); margin-bottom: 40px; display: inline-block;">
+        </div>
+
+        <div style="text-align: center;">
+            <p style="color: #64748b; margin-bottom: 5px;"><strong>Dashboard - Microsserviço API Consolidado</strong></p>
+            <img src="imagens/Sonar_consolidado.png" alt="Métricas SonarQube Consolidado" style="max-width: 100%; border: 1px solid #e2e8f0; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); margin-bottom: 30px; display: inline-block;">
+        </div>
+
+    </section>
+</div>
+
+</body>
+</html>
